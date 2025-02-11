@@ -31,7 +31,7 @@
       100% { opacity: 1; transform: scale(1); }
     }
 
-    /* Modal Container */
+    /* Modal Styles */
     .modal {
       background: rgba(255, 255, 255, 0.15);
       backdrop-filter: blur(10px);
@@ -41,19 +41,15 @@
       text-align: center;
       padding: 20px;
       width: 350px;
-      animation: fadeIn 1.5s ease-out forwards;
-      opacity: 0;
-      transform: scale(0.8);
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(1);
       z-index: 10;
     }
 
-    @keyframes fadeIn {
-      0% { opacity: 0; transform: scale(0.8); }
-      100% { opacity: 1; transform: scale(1); }
-    }
-
     .modal h1 {
-      font-size: 28px;
+      font-size: 24px;
       color: #ff80bf;
       text-shadow: 0 0 12px #ff80bf;
       margin: 10px 0;
@@ -103,34 +99,26 @@
       transform: scale(1.1);
     }
 
-    /* Response Modal */
-    .response-modal {
+    /* Final Message Stays Visible */
+    .final-message {
       position: fixed;
       top: 50%;
       left: 50%;
-      transform: translate(-50%, -50%) scale(0);
-      background: rgba(255, 255, 255, 0.15);
-      backdrop-filter: blur(10px);
-      border: 2px solid rgba(255, 0, 102, 0.4);
-      box-shadow: 0 0 20px rgba(255, 0, 102, 0.6);
+      transform: translate(-50%, -50%);
+      background: rgba(255, 255, 255, 0.2);
+      padding: 30px;
       border-radius: 20px;
       text-align: center;
-      padding: 20px;
-      width: 320px;
       display: none;
-      z-index: 20;
+      width: 400px;
+      box-shadow: 0 0 20px rgba(255, 0, 102, 0.8);
     }
 
-    .response-modal.active {
-      display: block;
-      animation: popUp 0.5s ease-out forwards;
+    .final-message h1 {
+      font-size: 28px;
+      color: #ff80bf;
+      text-shadow: 0 0 15px #ff80bf;
     }
-
-    @keyframes popUp {
-      0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
-      100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-    }
-
   </style>
 </head>
 <body>
@@ -138,11 +126,11 @@
   <!-- Twinkling Stars Script -->
   <script>
     function createStars() {
-      const numStars = 50; // Number of stars
+      const numStars = 50;
       for (let i = 0; i < numStars; i++) {
         const star = document.createElement("div");
         star.classList.add("star");
-        const size = Math.random() * 3 + 2; // Random star size
+        const size = Math.random() * 3 + 2;
         star.style.width = `${size}px`;
         star.style.height = `${size}px`;
         star.style.top = `${Math.random() * 100}vh`;
@@ -155,51 +143,78 @@
   </script>
 
   <!-- Main Modal -->
-  <div class="modal">
+  <div class="modal" id="mainModal">
     <h1>Will You Be My Valentine? 💖</h1>
-
-    <!-- GIF Section -->
     <div class="gif-box">
-      <img id="gif" src="images/snoopy2.gif" alt="Valentine GIF">
+      <img src="images/snoopy2.gif" alt="Valentine GIF">
     </div>
-
-    <!-- Buttons -->
     <div class="button-container">
-      <button class="button" onclick="showResponse(true)">Yes 💕</button>
+      <button class="button" onclick="showFlowerQuestion()">Yes 💕</button>
       <button class="button" onclick="showResponse(false)">No 💔</button>
     </div>
   </div>
 
-  <!-- Response Modal -->
-  <div id="responseModal" class="response-modal">
-    <h1 id="responseText"></h1>
+  <!-- Flower Question Modal -->
+  <div class="modal" id="flowerModal" style="display: none;">
+    <h1>Would you like some flowers? 🌸</h1>
     <div class="gif-box">
-      <img id="responseGif" src="" alt="Response GIF">
+      <img src="images/snoopy7.gif" alt="Flowers GIF">
     </div>
-    <button class="button" onclick="closeModal()">Close</button>
+    <div class="button-container">
+      <button class="button" onclick="showResponse(true, true)">Yes 🌺</button>
+      <button class="button" onclick="showResponse(true, false)">No ❌</button>
+    </div>
+  </div>
+
+  <!-- Final Message -->
+  <div id="finalMessage" class="final-message">
+    <h1 id="finalText"></h1>
+    <div class="gif-box">
+      <img id="finalGif" src="" alt="Final GIF">
+    </div>
+    <div class="button-container">
+      <button class="button" onclick="goBack()">Go Back 🔄</button>
+    </div>
   </div>
 
   <script>
-    // Show Response Modal with Local GIFs
-    function showResponse(isYes) {
-      const modal = document.getElementById("responseModal");
-      const text = document.getElementById("responseText");
-      const gif = document.getElementById("responseGif");
-
-      if (isYes) {
-        text.innerHTML = "Yay! 💖 You're my Valentine!";
-        gif.src = "images/snoopy.gif"; // Replace with your local 'yes' GIF
-      } else {
-        text.innerHTML = "Ouch 💔, maybe next time...";
-        gif.src = "images/snoopy3.gif"; // Replace with your local 'no' GIF
-      }
-
-      modal.classList.add("active");
+    function showFlowerQuestion() {
+      document.getElementById("mainModal").style.display = "none";
+      document.getElementById("flowerModal").style.display = "block";
     }
 
-    // Close Response Modal
-    function closeModal() {
-      document.getElementById("responseModal").classList.remove("active");
+    function showResponse(isYes, wantsFlowers = null) {
+      document.getElementById("mainModal").style.display = "none";
+      document.getElementById("flowerModal").style.display = "none";
+      const finalMessage = document.getElementById("finalMessage");
+      const finalText = document.getElementById("finalText");
+      const finalGif = document.getElementById("finalGif");
+
+      if (isYes) {
+        if (wantsFlowers) {
+          finalText.innerHTML = "Here are some flowers for you! 🌸";
+          finalGif.src = "images/snoopy8.gif";
+        } else {
+          finalText.innerHTML = "No worries, your presence is enough! 💖";
+          finalGif.src = "images/no-flowers.gif";
+        }
+      } else {
+        finalText.innerHTML = "Ouch 💔, maybe next time...";
+        finalGif.src = "images/snoopy3.gif";
+      }
+
+      finalGif.onload = function () {
+        finalMessage.style.display = "block";
+      };
+
+      finalGif.onerror = function () {
+        finalMessage.style.display = "block";
+      };
+    }
+
+    function goBack() {
+      document.getElementById("finalMessage").style.display = "none";
+      document.getElementById("mainModal").style.display = "block";
     }
   </script>
 
