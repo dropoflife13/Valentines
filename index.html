@@ -46,6 +46,11 @@
       left: 50%;
       transform: translate(-50%, -50%) scale(1);
       z-index: 10;
+      display: none;
+    }
+
+    .modal.active {
+      display: block;
     }
 
     .modal h1 {
@@ -98,27 +103,6 @@
       background: linear-gradient(45deg, #ff3385, #ff66a3);
       transform: scale(1.1);
     }
-
-    /* Final Message Stays Visible */
-    .final-message {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: rgba(255, 255, 255, 0.2);
-      padding: 30px;
-      border-radius: 20px;
-      text-align: center;
-      display: none;
-      width: 400px;
-      box-shadow: 0 0 20px rgba(255, 0, 102, 0.8);
-    }
-
-    .final-message h1 {
-      font-size: 28px;
-      color: #ff80bf;
-      text-shadow: 0 0 15px #ff80bf;
-    }
   </style>
 </head>
 <body>
@@ -142,32 +126,43 @@
     createStars();
   </script>
 
-  <!-- Main Modal -->
-  <div class="modal" id="mainModal">
+  <!-- First Question -->
+  <div class="modal active" id="mainModal">
     <h1>Will You Be My Valentine? 💖</h1>
     <div class="gif-box">
       <img src="images/snoopy2.gif" alt="Valentine GIF">
     </div>
     <div class="button-container">
-      <button class="button" onclick="showFlowerQuestion()">Yes 💕</button>
+      <button class="button" onclick="showValentineMessage()">Yes 💕</button>
       <button class="button" onclick="showResponse(false)">No 💔</button>
     </div>
   </div>
 
-  <!-- Flower Question Modal -->
-  <div class="modal" id="flowerModal" style="display: none;">
+  <!-- "You're My Valentine" Message -->
+  <div class="modal" id="valentineModal">
+    <h1>You're my Valentine! 💖</h1>
+    <div class="gif-box">
+      <img src="images/snoopy.gif" alt="Happy GIF">
+    </div>
+    <div class="button-container">
+      <button class="button" onclick="showFlowerQuestion()">Next ➡️</button>
+    </div>
+  </div>
+
+  <!-- Flower Question -->
+  <div class="modal" id="flowerModal">
     <h1>Would you like some flowers? 🌸</h1>
     <div class="gif-box">
       <img src="images/snoopy7.gif" alt="Flowers GIF">
     </div>
     <div class="button-container">
-      <button class="button" onclick="showResponse(true, true)">Yes 🌺</button>
-      <button class="button" onclick="showResponse(true, false)">No ❌</button>
+      <button class="button" onclick="showFinalMessage(true)">Yes 🌺</button>
+      <button class="button" onclick="showFinalMessage(false)">No ❌</button>
     </div>
   </div>
 
   <!-- Final Message -->
-  <div id="finalMessage" class="final-message">
+  <div class="modal" id="finalMessage">
     <h1 id="finalText"></h1>
     <div class="gif-box">
       <img id="finalGif" src="" alt="Final GIF">
@@ -178,43 +173,53 @@
   </div>
 
   <script>
-    function showFlowerQuestion() {
-      document.getElementById("mainModal").style.display = "none";
-      document.getElementById("flowerModal").style.display = "block";
+    function showValentineMessage() {
+      document.getElementById("mainModal").classList.remove("active");
+      document.getElementById("valentineModal").classList.add("active");
     }
 
-    function showResponse(isYes, wantsFlowers = null) {
-      document.getElementById("mainModal").style.display = "none";
-      document.getElementById("flowerModal").style.display = "none";
+    function showFlowerQuestion() {
+      document.getElementById("valentineModal").classList.remove("active");
+      document.getElementById("flowerModal").classList.add("active");
+    }
+
+    function showFinalMessage(wantsFlowers) {
+      document.getElementById("flowerModal").classList.remove("active");
+      const finalMessage = document.getElementById("finalMessage");
+      const finalText = document.getElementById("finalText");
+      const finalGif = document.getElementById("finalGif");
+
+      if (wantsFlowers) {
+        finalText.innerHTML = "Here are some flowers for you! 🌸";
+        finalGif.src = "images/snoopy8.gif";
+      } else {
+        finalText.innerHTML = "No worries, your presence is enough! 💖";
+        finalGif.src = "images/snoopy3.gif";
+      }
+
+      finalMessage.classList.add("active");
+    }
+
+    function showResponse(isYes) {
+      document.getElementById("mainModal").classList.remove("active");
       const finalMessage = document.getElementById("finalMessage");
       const finalText = document.getElementById("finalText");
       const finalGif = document.getElementById("finalGif");
 
       if (isYes) {
-        if (wantsFlowers) {
-          finalText.innerHTML = "Here are some flowers for you! 🌸";
-          finalGif.src = "images/snoopy8.gif";
-        } else {
-          finalText.innerHTML = "No worries, your presence is enough! 💖";
-          finalGif.src = "images/no-flowers.gif";
-        }
+        finalText.innerHTML = "You're my Valentine! 💖";
+        finalGif.src = "images/snoopy.gif";
       } else {
         finalText.innerHTML = "Ouch 💔, maybe next time...";
         finalGif.src = "images/snoopy3.gif";
       }
 
-      finalGif.onload = function () {
-        finalMessage.style.display = "block";
-      };
-
-      finalGif.onerror = function () {
-        finalMessage.style.display = "block";
-      };
+      finalMessage.classList.add("active");
     }
 
     function goBack() {
-      document.getElementById("finalMessage").style.display = "none";
-      document.getElementById("mainModal").style.display = "block";
+      document.querySelectorAll(".modal").forEach(modal => modal.classList.remove("active"));
+      document.getElementById("mainModal").classList.add("active");
     }
   </script>
 
